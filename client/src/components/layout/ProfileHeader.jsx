@@ -161,56 +161,10 @@ function useSynchronizedTypewriters(textsById, {
   return { displayed, phase };
 }
 
-function useReducedMotion() {
-  const [reduced, setReduced] = useState(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return false;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const onChange = (e) => setReduced(e.matches);
-    if (mql.addEventListener) {
-      mql.addEventListener('change', onChange);
-      return () => mql.removeEventListener('change', onChange);
-    }
-    mql.addListener(onChange);
-    return () => mql.removeListener(onChange);
-  }, []);
-
-  return reduced;
-}
-
-function useMobileLayout() {
-  const [isMobile, setIsMobile] = useState(() => (
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(max-width: 600px)').matches
-      : false
-  ));
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-    const mediaQuery = window.matchMedia('(max-width: 600px)');
-    const onChange = (event) => setIsMobile(event.matches);
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', onChange);
-      return () => mediaQuery.removeEventListener('change', onChange);
-    }
-    mediaQuery.addListener(onChange);
-    return () => mediaQuery.removeListener(onChange);
-  }, []);
-
-  return isMobile;
-}
-
 export default function ProfileHeader({ darkMode, onToggleTheme }) {
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
   const photos = profile.photos || [profile.photo, profile.hoverPhoto];
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const reducedMotion = useReducedMotion();
-  const isMobile = useMobileLayout();
-  const motionEnabled = !reducedMotion && !isMobile;
 
   const { displayed, phase: sharedPhase } = useSynchronizedTypewriters(
     {
@@ -223,7 +177,7 @@ export default function ProfileHeader({ darkMode, onToggleTheme }) {
       referenceDeleteSpeed: 55,
       holdDuration: 2000,
       startDelay: 600,
-      enabled: motionEnabled,
+      enabled: false,
     }
   );
 
