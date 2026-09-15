@@ -436,6 +436,31 @@
     height: 96px;
   }
 
+  .profile-header-inner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+    padding-right: 0;
+    padding-top: 40px;
+  }
+
+  .profile-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .profile-name {
+    font-size: 1.35rem;
+  }
+
+  .profile-location {
+    font-size: 0.82rem;
+  }
+
+  .profile-roles {
+    font-size: 0.9rem;
+  }
+
   .profile-actions {
     align-items: stretch;
     gap: 10px;
