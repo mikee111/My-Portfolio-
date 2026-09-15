@@ -474,7 +474,9 @@
     width: auto;
     box-sizing: border-box;
     padding-inline: 8px;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 }
 
