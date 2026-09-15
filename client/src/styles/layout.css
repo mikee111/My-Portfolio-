@@ -421,6 +421,7 @@
 
 @media (max-width: 600px) {
   .page-shell {
+    width: 100%;
     padding: 20px 16px 48px;
   }
 
@@ -472,8 +473,8 @@
     min-width: 0;
     width: auto;
     box-sizing: border-box;
-    padding-inline: 10px;
-    font-size: 0.84rem;
+    padding-inline: 8px;
+    font-size: 0.8rem;
   }
 }
 
