@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { startTransition, useState, useEffect } from 'react';
 import { profile } from '../../data/profile';
 
 function useSynchronizedTypewriters(textsById, {
@@ -21,8 +21,10 @@ function useSynchronizedTypewriters(textsById, {
     if (!enabled) {
       const full = {};
       ids.forEach((id) => { full[id] = textsById[id] || ''; });
-      setDisplayed(full);
-      setPhase('holding');
+      startTransition(() => {
+        setDisplayed(full);
+        setPhase('holding');
+      });
       return undefined;
     }
 
@@ -35,7 +37,7 @@ function useSynchronizedTypewriters(textsById, {
     });
 
     if (maxLen === 0) {
-      setPhase('holding');
+      startTransition(() => setPhase('holding'));
       return undefined;
     }
 
@@ -180,12 +182,35 @@ function useReducedMotion() {
   return reduced;
 }
 
+function useMobileLayout() {
+  const [isMobile, setIsMobile] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 600px)').matches
+      : false
+  ));
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const mediaQuery = window.matchMedia('(max-width: 600px)');
+    const onChange = (event) => setIsMobile(event.matches);
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', onChange);
+      return () => mediaQuery.removeEventListener('change', onChange);
+    }
+    mediaQuery.addListener(onChange);
+    return () => mediaQuery.removeListener(onChange);
+  }, []);
+
+  return isMobile;
+}
+
 export default function ProfileHeader({ darkMode, onToggleTheme }) {
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
   const photos = profile.photos || [profile.photo, profile.hoverPhoto];
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const reducedMotion = useReducedMotion();
-  const motionEnabled = !reducedMotion;
+  const isMobile = useMobileLayout();
+  const motionEnabled = !reducedMotion && !isMobile;
 
   const { displayed, phase: sharedPhase } = useSynchronizedTypewriters(
     {

@@ -438,11 +438,14 @@
 
   .profile-actions {
     flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .btn {
     justify-content: center;
     width: 100%;
+    box-sizing: border-box;
   }
 }
 
