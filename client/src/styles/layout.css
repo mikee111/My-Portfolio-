@@ -169,16 +169,10 @@
   color: var(--text-secondary);
 }
 
-.profile-location-pin {
+.profile-location-icon {
   flex-shrink: 0;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.profile-location-pin.is-visible {
-  opacity: 1;
-  transform: scale(1);
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .profile-name-text,
@@ -198,6 +192,9 @@
   font-weight: 500;
   line-height: 1.4;
   color: var(--text-primary);
+  min-height: 1.5em;
+  display: flex;
+  align-items: center;
 }
 
 .typewriter-text {

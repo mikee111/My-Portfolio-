@@ -1,185 +1,52 @@
-import { startTransition, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { profile } from '../../data/profile';
 
-function useSynchronizedTypewriters(textsById, {
-  referenceTypeSpeed = 90,
-  referenceDeleteSpeed = 55,
-  holdDuration = 2000,
-  startDelay = 600,
-  pauseBeforeRestart = 180,
-  enabled = true,
+function useRoleTypewriter(words, {
+  typeSpeed = 70,
+  deleteSpeed = 40,
+  holdDuration = 1800,
+  pauseBeforeRestart = 300,
 } = {}) {
-  const ids = Object.keys(textsById);
-  const initialTexts = ids.reduce((acc, id) => {
-    acc[id] = enabled ? '' : textsById[id] || '';
-    return acc;
-  }, {});
-  const [displayed, setDisplayed] = useState(initialTexts);
-  const [phase, setPhase] = useState(enabled ? 'start' : 'holding');
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const wordList = Array.isArray(words) ? words : [words];
 
   useEffect(() => {
-    if (!enabled) {
-      const full = {};
-      ids.forEach((id) => { full[id] = textsById[id] || ''; });
-      startTransition(() => {
-        setDisplayed(full);
-        setPhase('holding');
-      });
-      return undefined;
+    if (!wordList.length) return;
+
+    const currentWord = wordList[index] || '';
+
+    if (!isDeleting && subIndex === currentWord.length) {
+      const timeout = setTimeout(() => setIsDeleting(true), holdDuration);
+      return () => clearTimeout(timeout);
     }
 
-    const textLengths = {};
-    let maxLen = 0;
-    ids.forEach((id) => {
-      const t = textsById[id] || '';
-      textLengths[id] = t.length;
-      if (t.length > maxLen) maxLen = t.length;
-    });
-
-    if (maxLen === 0) {
-      startTransition(() => setPhase('holding'));
-      return undefined;
+    if (isDeleting && subIndex === 0) {
+      const timeout = setTimeout(() => {
+        setIsDeleting(false);
+        setIndex((prev) => (prev + 1) % wordList.length);
+      }, pauseBeforeRestart);
+      return () => clearTimeout(timeout);
     }
 
-    const typeStepMs = referenceTypeSpeed;
-    const deleteStepMs = referenceDeleteSpeed;
+    const timeout = setTimeout(() => {
+      setSubIndex((prev) => prev + (isDeleting ? -1 : 1));
+    }, isDeleting ? deleteSpeed : typeSpeed);
 
-    const typeIndexPerTick = {};
-    const deleteIndexPerTick = {};
-    ids.forEach((id) => {
-      const len = textLengths[id];
-      typeIndexPerTick[id] = len / maxLen;
-      deleteIndexPerTick[id] = len / maxLen;
-    });
+    return () => clearTimeout(timeout);
+  }, [subIndex, isDeleting, index, wordList, typeSpeed, deleteSpeed, holdDuration, pauseBeforeRestart]);
 
-    let timer;
-    let internalPhase = 'start';
-    const accumType = {};
-    const accumDel = {};
-    const currentLen = {};
-    ids.forEach((id) => {
-      accumType[id] = 0;
-      accumDel[id] = 0;
-      currentLen[id] = 0;
-    });
-
-    const scheduleNext = (delay) => {
-      timer = setTimeout(tick, delay);
-    };
-
-    const renderSlice = () => {
-      const next = {};
-      ids.forEach((id) => {
-        next[id] = (textsById[id] || '').slice(0, Math.max(0, Math.round(currentLen[id])));
-      });
-      setDisplayed(next);
-    };
-
-    const tick = () => {
-      if (internalPhase === 'start') {
-        internalPhase = 'typing';
-        setPhase('typing');
-        ids.forEach((id) => {
-          accumType[id] = 0;
-          currentLen[id] = 0;
-        });
-        setDisplayed(initialTexts);
-        scheduleNext(startDelay);
-        return;
-      }
-      if (internalPhase === 'typing') {
-        let anyPending = false;
-        ids.forEach((id) => {
-          const target = textLengths[id];
-          if (currentLen[id] < target) {
-            accumType[id] += typeIndexPerTick[id];
-            if (accumType[id] >= 1) {
-              const add = Math.floor(accumType[id]);
-              accumType[id] -= add;
-              currentLen[id] = Math.min(target, currentLen[id] + add);
-            }
-            if (currentLen[id] < target) anyPending = true;
-          }
-        });
-        renderSlice();
-        if (!anyPending) {
-          internalPhase = 'holding';
-          setPhase('holding');
-          clearTimeout(timer);
-          timer = setTimeout(tick, holdDuration);
-          return;
-        }
-        scheduleNext(typeStepMs);
-        return;
-      }
-      if (internalPhase === 'holding') {
-        internalPhase = 'deleting';
-        setPhase('deleting');
-        ids.forEach((id) => { accumDel[id] = 0; });
-        scheduleNext(deleteStepMs);
-        return;
-      }
-      if (internalPhase === 'deleting') {
-        let anyPending = false;
-        ids.forEach((id) => {
-          if (currentLen[id] > 0) {
-            accumDel[id] += deleteIndexPerTick[id];
-            if (accumDel[id] >= 1) {
-              const sub = Math.floor(accumDel[id]);
-              accumDel[id] -= sub;
-              currentLen[id] = Math.max(0, currentLen[id] - sub);
-            }
-            if (currentLen[id] > 0) anyPending = true;
-          }
-        });
-        renderSlice();
-        if (!anyPending) {
-          internalPhase = 'start';
-          setPhase('start');
-          clearTimeout(timer);
-          timer = setTimeout(tick, pauseBeforeRestart);
-          return;
-        }
-        scheduleNext(deleteStepMs);
-        return;
-      }
-    };
-
-    scheduleNext(startDelay);
-    return () => clearTimeout(timer);
-  }, [
-    ids.join('|||'),
-    Object.values(textsById).join('|||'),
-    referenceTypeSpeed,
-    referenceDeleteSpeed,
-    holdDuration,
-    startDelay,
-    pauseBeforeRestart,
-    enabled,
-  ]);
-
-  return { displayed, phase };
+  const currentWord = wordList[index] || '';
+  return currentWord.substring(0, subIndex);
 }
 
 export default function ProfileHeader({ darkMode, onToggleTheme }) {
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
   const photos = profile.photos || [profile.photo, profile.hoverPhoto];
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-
-  const { displayed, phase: sharedPhase } = useSynchronizedTypewriters(
-    {
-      name: profile.name,
-      location: profile.location,
-      roles: profile.roles,
-    },
-    {
-      referenceTypeSpeed: 90,
-      referenceDeleteSpeed: 55,
-      holdDuration: 2000,
-      startDelay: 600,
-      enabled: false,
-    }
-  );
+  const roleText = useRoleTypewriter(profile.roles);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -229,35 +96,31 @@ export default function ProfileHeader({ darkMode, onToggleTheme }) {
 
         <div className="profile-details">
           <h1 className="profile-name" aria-label={profile.name}>
-            <span className="profile-name-text typewriter-text">
-              {displayed.name}
-              {(sharedPhase === 'typing' || sharedPhase === 'deleting') && (
-                <span className="typewriter-cursor" aria-hidden="true">|</span>
-              )}
-            </span>
+            {profile.name}
           </h1>
           <p className="profile-location" aria-label={profile.location}>
-            <span
-              className={`icon-pin profile-location-pin ${
-                sharedPhase === 'typing' || sharedPhase === 'holding'
-                  ? 'is-visible'
-                  : ''
-              }`}
+            <svg
+              className="profile-location-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               aria-hidden="true"
-            />
-            <span className="profile-location-text typewriter-text">
-              {displayed.location}
-              {(sharedPhase === 'typing' || sharedPhase === 'deleting') && (
-                <span className="typewriter-cursor" aria-hidden="true">|</span>
-              )}
-            </span>
+            >
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span className="profile-location-text">{profile.location}</span>
           </p>
-          <p className="profile-roles" aria-label={profile.roles}>
+          <p className="profile-roles" aria-label="Professional Roles">
             <span className="profile-roles-text typewriter-text">
-              {displayed.roles}
-              {(sharedPhase === 'typing' || sharedPhase === 'deleting') && (
-                <span className="typewriter-cursor" aria-hidden="true">|</span>
-              )}
+              {roleText}
+              <span className="typewriter-cursor" aria-hidden="true">|</span>
             </span>
           </p>
 
