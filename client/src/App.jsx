@@ -47,9 +47,9 @@ function App() {
                 <div className="content-grid content-grid--card">
                   <div className="content-column">
                     <AboutSection />
-                    <EducationSection />
                     <TechStackSection />
                     <CertificationsSection />
+                    <EducationSection />
                   </div>
 
                   <div className="sidebar-column">
