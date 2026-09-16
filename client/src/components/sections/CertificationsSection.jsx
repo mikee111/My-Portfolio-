@@ -75,8 +75,6 @@ export default function CertificationsSection() {
               src={activeCert.image}
               alt={activeCert.title}
               className="cert-modal-image"
-              loading="lazy"
-              decoding="async"
             />
           </div>
         </div>
