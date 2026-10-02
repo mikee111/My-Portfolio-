@@ -497,55 +497,191 @@
 .demo-credentials-overlay {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  background: rgba(17, 24, 39, 0.45);
+  padding: 20px;
+  background: rgba(15, 17, 23, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: demoModalFadeIn 0.2s ease-out;
+}
+
+@keyframes demoModalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .demo-credentials-modal {
-  width: min(520px, 100%);
-  padding: 28px 32px 22px;
-  border-radius: 24px;
-  background: #f3f4f6;
+  position: relative;
+  width: min(520px, 94vw);
+  padding: 28px 30px 24px;
+  border-radius: 20px;
+  background: #ffffff;
   color: #111827;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+[data-theme='dark'] .demo-credentials-modal {
+  background: #181d28;
+  color: #f3f4f6;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+.demo-credentials-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .demo-credentials-title {
-  margin: 0 0 22px;
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: 1.18rem;
   font-weight: 700;
-  color: #111827;
+  color: inherit;
+}
+
+.demo-credentials-x {
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+}
+
+.demo-credentials-x:hover {
+  opacity: 1;
 }
 
 .demo-credentials-account {
-  margin-bottom: 22px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
 }
 
-.demo-credentials-account p {
-  margin: 0 0 6px;
-  font-size: 0.95rem;
-  line-height: 1.45;
-  color: #111827;
+[data-theme='dark'] .demo-credentials-account {
+  background: #10141d;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .demo-credentials-label {
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent, #2563eb);
+  text-transform: uppercase;
+}
+
+.demo-credentials-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 6px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.demo-credentials-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demo-credentials-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: inherit;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+[data-theme='dark'] .demo-credentials-copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.demo-credentials-copy-btn:hover {
+  background: var(--accent, #2563eb);
+  color: #fff;
+  border-color: var(--accent, #2563eb);
+}
+
+.demo-credentials-hint {
+  margin: 14px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.demo-credentials-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .demo-credentials-close {
-  display: block;
-  margin: 8px auto 0;
-  padding: 6px 10px;
+  display: inline-block;
+  padding: 7px 16px;
   border: none;
   background: transparent;
-  color: #111827;
-  font-size: 0.95rem;
+  color: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
   cursor: pointer;
+  border-radius: 999px;
+  transition: opacity 0.18s ease;
+}
+
+.demo-credentials-close:hover {
+  opacity: 0.7;
+}
+
+.demo-credentials-demo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent, #2563eb);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: opacity 0.18s ease;
+}
+
+.demo-credentials-demo-link:hover {
+  opacity: 0.9;
 }
 
 @media (max-width: 600px) {
@@ -577,7 +713,7 @@
     min-height: 22px;
     padding: 2px 8px;
     font-size: 0.65rem;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   .project-info {
