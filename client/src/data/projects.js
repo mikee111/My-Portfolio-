@@ -5,9 +5,10 @@ export const projects = [
   {
     id: 'bread-inventory',
     title: 'Bread Inventory Management System',
-    secondTitle: 'terisitas reservation barbershops',
+    secondTitle: 'Teresitas Barbershop Reservation System',
     secondProjectId: 'terisitas-barbershop',
     secondGithubUrl: 'https://github.com/mikee111',
+    secondDemoUrl: 'https://teresitas-barbershop.vercel.app',
     images: [breadmilk, barbershopLanding],
     githubUrl: 'https://github.com/mikee111/My-Portfolio-',
     caseStudyUrl: 'https://your-case-study-url.com',
@@ -46,9 +47,10 @@ export const projects = [
   },
   {
     id: 'terisitas-barbershop',
-    title: 'terisitas reservation barbershops',
+    title: 'Teresitas Barbershop Reservation System',
     images: [barbershopLanding],
     githubUrl: 'https://github.com/mikee111',
+    demoUrl: 'https://teresitas-barbershop.vercel.app',
     caseStudyUrl: 'https://your-case-study-url.com',
     leadDeveloper: 'Mike Arvin Cruz',
     architecture: 'Client-Server Architecture',
