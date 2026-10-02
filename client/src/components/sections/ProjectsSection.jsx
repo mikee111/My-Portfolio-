@@ -100,7 +100,7 @@ export default function ProjectsSection() {
 
               <div className="project-col">
                 <h3 className="project-title">{project.secondTitle || 'Teresitas Barbershop Reservation System'}</h3>
-                <div className="project-buttons-container project-buttons-split">
+                <div className="project-buttons-container">
                   <a
                     href={project.secondGithubUrl || project.githubUrl}
                     target="_blank"
